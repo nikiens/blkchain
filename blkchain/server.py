@@ -2,7 +2,9 @@ import logging
 import json
 import grequests
 import time
+import sys
 
+from types import SimpleNamespace
 from threading import Thread
 from flask import Flask, request
 from node import Node
@@ -17,6 +19,7 @@ class Server():
         self.urls = [f'http://{self.host}:{3000 + offset}/' for offset in range(3)]
         self.curr_port = 3000 + self.node.node_id - 1
 
+        logging.basicConfig(stream=sys.stdout, level=logging.INFO)
         self.logger = logging.getLogger(f'Node {self.node.node_id}')
 
     def block_generation(self):
@@ -35,7 +38,7 @@ class Server():
         @srv.route('/', methods=['POST'])
         def srv_handler():
             block_json = request.get_json()
-            block = json.loads(block_json)
+            block = json.loads(block_json, object_hook=lambda o: SimpleNamespace(**o))
             
             if self.node.handle_block(block):
                 self.logger.info(str(block))
@@ -44,8 +47,8 @@ class Server():
             
             return "Block processed"
     
-        server_thread = Thread(target=srv.run, args=(self.host, self.current_port), daemon=False)
-        blocks_generation_thread = Thread(target=self.blocks_generator, daemon=False)
+        server_thread = Thread(target=srv.run, args=(self.host, self.curr_port), daemon=False)
+        blocks_generation_thread = Thread(target=self.block_generation, daemon=False)
 
         server_thread.start()
         blocks_generation_thread.start()

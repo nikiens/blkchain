@@ -9,9 +9,9 @@ class Block():
     def __init__(self, index, prev_hash, nonce_type, node_id):
         self.index = index
         self.prev_hash = prev_hash
-        self.hash = self.generate_hash(nonce_type)
-        self.data = self.generate_random_string(256)
         self.nonce = 0
+        self.data = self.generate_random_string(256)
+        self.hash = self.generate_hash(nonce_type)
         self.node_id = node_id
 
     def generate_random_string(self, length):
@@ -19,23 +19,23 @@ class Block():
     
     def generate_hash(self, nonce_type):
         concat = "".join([str(self.index), self.prev_hash, self.data, str(self.nonce)])
-        hash = sha256(concat.encode('utf-8'))
+        g_hash = sha256(concat.encode('utf-8'))
 
-        while hash.hexdigest()[-4:] != '0000':
+        while g_hash.hexdigest()[-4:] != '0000':
             self.update_nonce(nonce_type)
 
             concat = "".join([str(self.index), self.prev_hash, self.data, str(self.nonce)])
-            hash = sha256(concat.encode('utf-8'))
+            g_hash = sha256(concat.encode('utf-8'))
         
-        self.hash = hash
+        return g_hash.hexdigest()
 
     def update_nonce(self, type):
         if type == '1to10':
-            self.nonce = random.randint(1, 10)
+            self.nonce += random.randint(1, 10)
         elif type == '11to20':
-            self.nonce = random.randint(11,20)
+            self.nonce += random.randint(11,20)
         elif type == '21to30':
-            self.nonce = random.random(21, 30)
+            self.nonce += random.random(21, 30)
         else:
             raise Exception('Wrong nonce type!')
         

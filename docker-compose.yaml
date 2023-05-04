@@ -7,21 +7,18 @@ services:
     container_name: node1
     network_mode: host
     command: ["1", "1to10"]
-    tty: true
 
   node2:
     image: nikiens/blkchain
     container_name: node2
     network_mode: host
     command: ["2", "11to20"]
-    tty: true
 
   node3:
     image: nikiens/blkchain
     container_name: node3
     network_mode: host
     command: ["3", "21to30"]
-    tty: true
     depends_on:
       - node1
       - node2

@@ -35,7 +35,7 @@ class Block():
         elif type == '11to20':
             self.nonce += random.randint(11,20)
         elif type == '21to30':
-            self.nonce += random.random(21, 30)
+            self.nonce += random.randint(21, 30)
         else:
             raise Exception('Wrong nonce type!')
         

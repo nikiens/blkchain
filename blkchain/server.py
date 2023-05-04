@@ -6,6 +6,7 @@ import time
 from threading import Thread
 from flask import Flask, request
 from node import Node
+from block import Block
 
 class Server():
 
@@ -48,3 +49,10 @@ class Server():
 
         server_thread.start()
         blocks_generation_thread.start()
+
+        if self.node.node_id == 1:
+            time.sleep(2)
+
+            genesis = Block(0, 'GENESIS', nonce_type='1to10', node_id=-1)
+            grequests.map((grequests.post(i, json=genesis.to_json()) for i in self.urls))
+        

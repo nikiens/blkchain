@@ -3,6 +3,7 @@ import json
 import grequests
 import time
 import sys
+import os
 
 from types import SimpleNamespace
 from threading import Thread
@@ -15,11 +16,17 @@ class Server():
     def __init__(self, node: Node):
         self.node = node
 
-        self.host = 'localhost'
-        self.urls = [f'http://{self.host}:{3000 + offset}/' for offset in range(3)]
-        self.curr_port = 3000 + self.node.node_id - 1
+        self.start_port = os.environ['START_PORT']
+        self.host = f'node{self.node.node_id}'
+        self.neighbour_ids = os.environ['NEIGHBOUR_IDS']
+        self.curr_port = int(self.start_port) + self.node.node_id
 
+        self.urls = [f'http://{self.host}:{self.curr_port}']
+        for i in self.neighbour_ids.split(', '):
+            self.urls.append(f'http://node{i}:{int(self.start_port) + int(i)}')
+        
         logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+        logging.getLogger('werkzeug').disabled = True
         self.logger = logging.getLogger(f'Node {self.node.node_id}')
 
     def block_generation(self):

@@ -5,20 +5,28 @@ services:
   node1:
     image: nikiens/blkchain
     container_name: node1
-    network_mode: host
     command: ["1", "1to10"]
+    environment:
+      - START_PORT=3000
+      - NEIGHBOUR_IDS=2, 3
 
   node2:
     image: nikiens/blkchain
     container_name: node2
-    network_mode: host
     command: ["2", "11to20"]
+    environment:
+      - START_PORT=3000
+      - NEIGHBOUR_IDS=1, 3
+
 
   node3:
     image: nikiens/blkchain
     container_name: node3
-    network_mode: host
     command: ["3", "21to30"]
+    environment:
+      - START_PORT=3000
+      - NEIGHBOUR_IDS=1, 2
+
     depends_on:
       - node1
       - node2
